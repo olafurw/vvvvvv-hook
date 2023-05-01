@@ -1,0 +1,17 @@
+Install DirectX SDK
+https://www.microsoft.com/en-us/download/details.aspx?id=6812
+
+Windows SDK
+https://www.microsoft.com/en-us/download/details.aspx?id=8279
+
+Detours
+
+Kiero Hook
+https://github.com/Rebzzel/kiero
+
+
+https://github.com/master131/ExtremeInjector ???
+
+no, use this as a seperate application ??
+
+https://stackoverflow.com/questions/58275749/how-to-inject-dll-making-a-detours-enabled-hook

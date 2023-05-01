@@ -3,7 +3,6 @@
         "ms-vscode.cpptools",
         "ms-vscode.cmake-tools",
         "xaver.clang-format",
-        "notskm.clang-tidy",
         "fredericbonnet.cmake-test-adapter",
         "vadimcn.vscode-lldb"
     ]
