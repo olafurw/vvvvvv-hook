@@ -3,7 +3,7 @@ find_library(DETOURS_LIBRARY detours REQUIRED)
 
 # Loader
 
-add_executable(loader loader.cpp)
+add_executable(loader loader.cpp validate_dll.h validate_dll.cpp)
 target_include_directories(loader PRIVATE ${DETOURS_INCLUDE_DIRS})
 target_link_libraries(loader PRIVATE ${DETOURS_LIBRARY})
 

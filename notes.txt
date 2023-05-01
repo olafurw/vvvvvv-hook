@@ -15,3 +15,7 @@ https://github.com/master131/ExtremeInjector ???
 no, use this as a seperate application ??
 
 https://stackoverflow.com/questions/58275749/how-to-inject-dll-making-a-detours-enabled-hook
+
+https://tasvideos.org/LawsOfTAS
+http://tasvideos.org/LawsOfTAS/OnSavestates.html
+https://github.com/TASEmulators/fceux/blob/201cb50d8914e55223a1bf3ad19f0bc46bfdc407/src/movie.cpp#L1479
