@@ -17,6 +17,7 @@ set_target_properties(loader
 add_library(hook SHARED main.cpp)
 target_include_directories(hook PRIVATE ${DETOURS_INCLUDE_DIRS})
 target_link_libraries(hook PRIVATE ${DETOURS_LIBRARY})
+target_link_libraries(hook PRIVATE d3d9)
 target_link_options(hook PRIVATE "/export:DetourFinishHelperProcess,@1,NONAME")
 
 set_target_properties(hook

@@ -7,8 +7,7 @@
 
 #include "validate_dll.h"
 
-struct HookProcess
-{
+struct HookProcess {
   STARTUPINFOA si;
   PROCESS_INFORMATION pi;
   char szCommand[2048]{};
@@ -23,9 +22,7 @@ struct HookProcess
 };
 
 HookProcess::HookProcess(const char * process, const char * dll)
-  : process{ process },
-    dll{ dll }
-{
+  : process{ process }, dll{ dll } {
   ZeroMemory(&si, sizeof(si));
   si.cb = sizeof(si);
 

@@ -19,3 +19,8 @@ https://stackoverflow.com/questions/58275749/how-to-inject-dll-making-a-detours-
 https://tasvideos.org/LawsOfTAS
 http://tasvideos.org/LawsOfTAS/OnSavestates.html
 https://github.com/TASEmulators/fceux/blob/201cb50d8914e55223a1bf3ad19f0bc46bfdc407/src/movie.cpp#L1479
+
+Since it's SDL2 I have to match how they create the d3d device.
+https://github.com/zielmicha/SDL2/blob/master/src/render/direct3d/SDL_render_d3d.c#L535
+
+Big issue is that we get attached before the window is created, so we have to wait.
