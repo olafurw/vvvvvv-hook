@@ -60,7 +60,7 @@ void HookProcess::start() {
 
 int main() {
   const auto dll{ "hook.dll" };
-  const auto process{ "C:\\Users\\olafu\\source\\repos\\vvvvvv-hook\\build\\x86-windows\\bin\\Debug\\triangle.exe" };
+  const auto process{ "C:\\Users\\olafu\\source\\repos\\vvvvvv-hook\\build\\x86-windows\\bin\\Debug\\VVVVVV\\VVVVVV.exe" };
 
   HookProcess hook(process, dll);
   if (!hook.init()) {

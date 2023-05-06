@@ -1,30 +1,13 @@
 /**
+ * DX9 Hook, based on the
  * DirectX 9 Output interceptor
- * Tom Gascoigne <tom@gascoigne.me>
- *
- * Basically, this dll works by loading itsself into
- * a directx program's address space, then obtaining
- * pointers to the vtable for objects that it's interested
- * in. From here, the dll can locate the pointer to the
- * function it wants to hook, and replace it with
- * a pointer to its own function. This allows the
- * program to intercept any parameters and objects
- * in use by the function, where it can obtain video
- * output.
- * It then executes the original function and returns the
- * output, making the program unaware that anything happened.
- *
+ * by Tom Gascoigne <tom@gascoigne.me>
+ * https://github.com/HuiyingLi/D3D-Hook-Test/blob/master/D3DHook/dllmain.cpp
  */
 #include <d3d9.h>
 #include <d3dx9.h>
 
-#pragma comment(lib, "d3d9.lib")
-#pragma comment(lib, "d3dx9.lib")
-
-#undef _HKDEBUG_
-
 // Prototypes for d3d functions we want to hook
-
 typedef HRESULT(WINAPI * CreateDevice_t)(IDirect3D9 * Direct3D_Object, UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS * pPresentationParameters, IDirect3DDevice9 ** ppReturnedDeviceInterface);
 typedef HRESULT(WINAPI * EndScene_t)(IDirect3DDevice9 * surface);
 
@@ -39,14 +22,9 @@ HRESULT WINAPI D3DEndScene_hook(IDirect3DDevice9 * device);
 // vtable stuff
 PDWORD IDirect3D9_vtable = NULL;
 
-// Function indices: These are liable to change
-// This is the functions index into the vtable
-// Find these by reading through d3d9.h and counting in order
-// IDirect3D9
+// vtable offsets
 #define CREATEDEVICE_VTI 16
-// IDirect3DDevice9
 #define ENDSCENE_VTI 42
-
 
 HRESULT WINAPI HookCreateDevice();
 DWORD WINAPI VTablePatchThread(LPVOID threadParam);
@@ -56,35 +34,22 @@ BOOL APIENTRY DllMain(HMODULE hModule,
                       LPVOID lpReserved) {
   (void)hModule;
   (void)lpReserved;
+
   switch (ul_reason_for_call) {
-    case DLL_PROCESS_ATTACH:
-      // #ifdef _HKDEBUG_
-      MessageBoxA(NULL, "DLL Injected", "DLL Injected", MB_ICONEXCLAMATION);
-      // #endif
-      //  First, We want to create our own D3D object so that we can hook CreateDevice
-      if (HookCreateDevice() == D3D_OK) {
-        return TRUE;
-      } else {
-#ifdef _HKDEBUG_
-        MessageBoxA(NULL, "Unable to hook directx", "Unable to hook directx", MB_ICONEXCLAMATION);
-#endif
+    case DLL_PROCESS_ATTACH: {
+      const auto hook{ HookCreateDevice() };
+      if (hook != D3D_OK) {
+        MessageBoxA(NULL, "Unable to hook", "Unable to hook", MB_ICONEXCLAMATION);
         return FALSE;
       }
-
       break;
+    }
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:
     case DLL_PROCESS_DETACH:
-      /*
-      // TODO: Hook directx shutdown for this
-      if (g_mpegEncoder)
-      {
-              MessageBoxA(NULL, "Detached from process", "DLL", MB_ICONEXCLAMATION);
-              delete g_mpegEncoder;
-      }
-      */
       break;
   }
+
   return TRUE;
 }
 
@@ -93,41 +58,31 @@ BOOL APIENTRY DllMain(HMODULE hModule,
  * to CreateDevice within IDirect3D9's vtable.
  */
 HRESULT WINAPI HookCreateDevice() {
-  // Obtain a D3D object
-  IDirect3D9 * device = Direct3DCreate9(D3D_SDK_VERSION);
+  IDirect3D9 * device{ Direct3DCreate9(D3D_SDK_VERSION) };
   if (!device) {
-#ifdef _HKDEBUG_
-    MessageBoxA(NULL, "Unable to create device", "CreateDevice", MB_ICONEXCLAMATION);
-#endif
     return D3DERR_INVALIDCALL;
   }
-  // Now we have an object, store a pointer to its vtable and release the object
-  IDirect3D9_vtable = (DWORD *)*(DWORD *)device; // Confusing typecasts
+
+  IDirect3D9_vtable = (DWORD *)*(DWORD *)device;
   device->Release();
 
-  // Unprotect the vtable for writing
-  DWORD protectFlag;
-  if (VirtualProtect(&IDirect3D9_vtable[CREATEDEVICE_VTI], sizeof(DWORD), PAGE_READWRITE, &protectFlag)) {
-    // Store the original CreateDevice pointer and shove our own function into the vtable
-    *(DWORD *)&D3DCreateDevice_orig = IDirect3D9_vtable[CREATEDEVICE_VTI];
-    *(DWORD *)&IDirect3D9_vtable[CREATEDEVICE_VTI] = (DWORD)D3DCreateDevice_hook;
-
-    // Reprotect the vtable
-    if (!VirtualProtect(&IDirect3D9_vtable[CREATEDEVICE_VTI], sizeof(DWORD), protectFlag, &protectFlag)) {
-#ifdef _HKDEBUG_
-      MessageBoxA(NULL, "Unable to access vtable", "CreateDevice", MB_ICONEXCLAMATION);
-#endif
-      return D3DERR_INVALIDCALL;
-    }
-  } else {
-#ifdef _HKDEBUG_
+  DWORD protectFlag{ 0 };
+  const BOOL unlock{ VirtualProtect(&IDirect3D9_vtable[CREATEDEVICE_VTI], sizeof(DWORD), PAGE_READWRITE, &protectFlag) };
+  if (!unlock) {
     MessageBoxA(NULL, "Unable to access vtable", "CreateDevice", MB_ICONEXCLAMATION);
-#endif
     return D3DERR_INVALIDCALL;
   }
-#ifdef _HKDEBUG_
-  MessageBoxA(NULL, "Hooked CreateDevice call", "CreateDevice", MB_ICONEXCLAMATION);
-#endif
+
+  // Store the original CreateDevice pointer and shove our own function into the vtable
+  *(DWORD *)&D3DCreateDevice_orig = IDirect3D9_vtable[CREATEDEVICE_VTI];
+  *(DWORD *)&IDirect3D9_vtable[CREATEDEVICE_VTI] = (DWORD)D3DCreateDevice_hook;
+
+  const BOOL lock{ VirtualProtect(&IDirect3D9_vtable[CREATEDEVICE_VTI], sizeof(DWORD), protectFlag, &protectFlag) };
+  if (!lock) {
+    MessageBoxA(NULL, "Unable to access vtable", "CreateDevice", MB_ICONEXCLAMATION);
+    return D3DERR_INVALIDCALL;
+  }
+
   return D3D_OK;
 }
 
@@ -137,42 +92,41 @@ HRESULT WINAPI HookCreateDevice() {
  * methods we need
  */
 HRESULT WINAPI D3DCreateDevice_hook(IDirect3D9 * Direct3D_Object, UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS * pPresentationParameters, IDirect3DDevice9 ** ppReturnedDeviceInterface) {
-#ifdef _HKDEBUG_
-  MessageBoxA(NULL, "CreateDevice called", "CreateDevice", MB_ICONEXCLAMATION);
-#endif
   // Append the almighty D3DCREATE_MULTITHREADED flag...
-  HRESULT result = D3DCreateDevice_orig(Direct3D_Object, Adapter, DeviceType, hFocusWindow, BehaviorFlags | D3DCREATE_MULTITHREADED, pPresentationParameters, ppReturnedDeviceInterface);
+  const HRESULT result{ D3DCreateDevice_orig(Direct3D_Object, Adapter, DeviceType, hFocusWindow, BehaviorFlags | D3DCREATE_MULTITHREADED, pPresentationParameters, ppReturnedDeviceInterface) };
+  if (result != D3D_OK) {
+    MessageBoxA(NULL, "Unable to create original device", "Unable to create original device", MB_ICONEXCLAMATION);
+    return result;
+  }
 
   // Now we've intercepted the program's call to CreateDevice and we have the IDirect3DDevice9 that it uses
   // We can get it's vtable and patch in our own detours
   // Reset the CreateDevice hook since it's no longer needed
   // Unprotect the vtable for writing
-  DWORD protectFlag;
-  if (VirtualProtect(&IDirect3D9_vtable[CREATEDEVICE_VTI], sizeof(DWORD), PAGE_READWRITE, &protectFlag)) {
-    // Store the original CreateDevice pointer and shove our own function into the vtable
-    *(DWORD *)&IDirect3D9_vtable[CREATEDEVICE_VTI] = (DWORD)D3DCreateDevice_orig;
-
-    // Reprotect the vtable
-    if (!VirtualProtect(&IDirect3D9_vtable[CREATEDEVICE_VTI], sizeof(DWORD), protectFlag, &protectFlag)) {
-      return D3DERR_INVALIDCALL;
-    }
-  } else {
+  DWORD protectFlag{ 0 };
+  const BOOL unlock{ VirtualProtect(&IDirect3D9_vtable[CREATEDEVICE_VTI], sizeof(DWORD), PAGE_READWRITE, &protectFlag) };
+  if (!unlock) {
+    MessageBoxA(NULL, "Unable to unlock to create device hook", "Unable to unlock to create device hook", MB_ICONEXCLAMATION);
     return D3DERR_INVALIDCALL;
   }
 
-  if (result == D3D_OK) {
-    // Load the new vtable
-    IDirect3D9_vtable = (DWORD *)*(DWORD *)*ppReturnedDeviceInterface;
-#ifdef _HKDEBUG_
-    MessageBoxA(NULL, "Loaded IDirect3DDevice9 vtable", "CreateDevice", MB_ICONEXCLAMATION);
-#endif
+  *(DWORD *)&IDirect3D9_vtable[CREATEDEVICE_VTI] = (DWORD)D3DCreateDevice_orig;
 
-    // Store pointers to the original functions that we want to hook
-    *(PDWORD)&D3DEndScene_orig = (DWORD)IDirect3D9_vtable[ENDSCENE_VTI];
+  const BOOL lock{ VirtualProtect(&IDirect3D9_vtable[CREATEDEVICE_VTI], sizeof(DWORD), protectFlag, &protectFlag) };
+  if (!lock) {
+    MessageBoxA(NULL, "Unable to lock to create device hook", "Unable to lock to create device hook", MB_ICONEXCLAMATION);
+    return D3DERR_INVALIDCALL;
+  }
 
-    if (!CreateThread(NULL, 0, VTablePatchThread, NULL, NULL, NULL)) {
-      return D3DERR_INVALIDCALL;
-    }
+  // Load the new vtable
+  IDirect3D9_vtable = (DWORD *)*(DWORD *)*ppReturnedDeviceInterface;
+  
+  // Store pointers to the original functions that we want to hook
+  *(PDWORD)&D3DEndScene_orig = (DWORD)IDirect3D9_vtable[ENDSCENE_VTI];
+  
+  if (!CreateThread(NULL, 0, VTablePatchThread, NULL, NULL, NULL)) {
+    MessageBoxA(NULL, "Unable to create thread to patch vtable", "Unable to create thread to patch vtable", MB_ICONEXCLAMATION);
+    return D3DERR_INVALIDCALL;
   }
 
   return result;
@@ -183,30 +137,16 @@ HRESULT WINAPI D3DCreateDevice_hook(IDirect3D9 * Direct3D_Object, UINT Adapter, 
  * This is needed because the program might set these pointers back to
  * their original values at any point
  */
+// waage maybe not needed?
 DWORD WINAPI VTablePatchThread(LPVOID threadParam) {
   (void)threadParam;
-#ifdef _HKDEBUG_
-  MessageBoxA(NULL, "VTable patch thread started", "Patch Thread", MB_ICONEXCLAMATION);
-#endif
   while (true) {
     Sleep(100);
-
     *(DWORD *)&IDirect3D9_vtable[ENDSCENE_VTI] = (DWORD)D3DEndScene_hook;
   }
 }
 
-/**
- * This is called when each frame has finished
- * from here we can intercept the video output
- */
 HRESULT WINAPI D3DEndScene_hook(IDirect3DDevice9 * device) {
-  HRESULT result;
-  result = D3DEndScene_orig(device);
-
-  // Here, we can get the output of the d3d device using GetBackBuffer, and send it off to
-  // a file, or to be encoded, or whatever. *borat* Great success!!
-
-  // D3DXSaveSurfaceToFile("Capture.bmp", D3DXIFF_BMP, capture, NULL, NULL);
-
+  const HRESULT result{ D3DEndScene_orig(device) };
   return result;
 }
