@@ -6,6 +6,8 @@
  */
 #include <d3d9.h>
 #include <d3dx9.h>
+#include <cstdint>
+#include <fstream>
 
 // Prototypes for d3d functions we want to hook
 typedef HRESULT(WINAPI * CreateDevice_t)(IDirect3D9 * Direct3D_Object, UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS * pPresentationParameters, IDirect3DDevice9 ** ppReturnedDeviceInterface);
@@ -46,6 +48,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
     }
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:
+      break;
     case DLL_PROCESS_DETACH:
       break;
   }
@@ -146,7 +149,49 @@ DWORD WINAPI VTablePatchThread(LPVOID threadParam) {
   }
 }
 
+static uint64_t frameCounter{ 0 };
+static std::fstream logFile;
+
 HRESULT WINAPI D3DEndScene_hook(IDirect3DDevice9 * device) {
+  //if (!logFile.is_open()) {
+  //  logFile.open("log.txt", std::ios::out | std::ios::app);
+  //}
+
   const HRESULT result{ D3DEndScene_orig(device) };
+  frameCounter++;
+
+  if (frameCounter == 1) {
+    INPUT ip;
+    ip.type = INPUT_KEYBOARD;
+    ip.ki.time = 0;
+    ip.ki.wScan = 0x39;
+    ip.ki.dwFlags = KEYEVENTF_SCANCODE;
+    SendInput(1, &ip, sizeof(INPUT));
+  }
+  if (frameCounter == 2) {
+    INPUT ip;
+    ip.type = INPUT_KEYBOARD;
+    ip.ki.time = 0;
+    ip.ki.wScan = 0x39;
+    ip.ki.dwFlags = KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP;
+    SendInput(1, &ip, sizeof(INPUT));
+  }
+  if (frameCounter == 3) {
+    INPUT ip;
+    ip.type = INPUT_KEYBOARD;
+    ip.ki.time = 0;
+    ip.ki.wScan = 0x39;
+    ip.ki.dwFlags = KEYEVENTF_SCANCODE;
+    SendInput(1, &ip, sizeof(INPUT));
+  }
+  if (frameCounter == 4) {
+    INPUT ip;
+    ip.type = INPUT_KEYBOARD;
+    ip.ki.time = 0;
+    ip.ki.wScan = 0x39;
+    ip.ki.dwFlags = KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP;
+    SendInput(1, &ip, sizeof(INPUT));
+  }
+
   return result;
 }

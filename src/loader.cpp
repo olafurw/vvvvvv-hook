@@ -62,6 +62,14 @@ int main() {
   const auto dll{ "hook.dll" };
   const auto process{ "C:\\Users\\olafu\\source\\repos\\vvvvvv-hook\\build\\x86-windows\\bin\\Debug\\VVVVVV\\VVVVVV.exe" };
 
+  const auto settingsOrig{ "C:\\Users\\olafu\\Documents\\VVVVVV\\saves\\settings.old" };
+  const auto settings{ "C:\\Users\\olafu\\Documents\\VVVVVV\\saves\\settings.vvv" };
+  const auto unlockOrig{ "C:\\Users\\olafu\\Documents\\VVVVVV\\saves\\unlock.old" };
+  const auto unlock{ "C:\\Users\\olafu\\Documents\\VVVVVV\\saves\\unlock.vvv" };
+
+  CopyFile(settingsOrig, settings, FALSE);
+  CopyFile(unlockOrig, unlock, FALSE);
+
   HookProcess hook(process, dll);
   if (!hook.init()) {
     return 1;
