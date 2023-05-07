@@ -52,8 +52,14 @@ HRESULT WINAPI D3DEndSceneHook(IDirect3DDevice9 * device) {
   ImGui_ImplWin32_NewFrame();
   ImGui::NewFrame();
 
+  bool open{ true };
+  ImGui::SetNextWindowSize(ImVec2(100, 60));
+  ImGui::SetNextWindowPos(ImVec2(10, 10));
+  ImGui::Begin("Debug", &open);
+
   ImGui::Text("frame: %d", frameCounter);
 
+  ImGui::End();
   ImGui::EndFrame();
   ImGui::Render();
   ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
