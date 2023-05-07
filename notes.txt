@@ -24,3 +24,44 @@ Since it's SDL2 I have to match how they create the d3d device.
 https://github.com/zielmicha/SDL2/blob/master/src/render/direct3d/SDL_render_d3d.c#L535
 
 Big issue is that we get attached before the window is created, so we have to wait.
+
+Fixed with new hooking code.
+
+Game has a way to set the framerate to 30fps which based on the source code does not wait for events
+But if a game does this we might have to hook the SDL_PollEvent code
+
+---
+
+xx Intro
+
+I love playing games, been playing them since I was a kid.
+
+Later in life I learned how to program, so I've always thought about, how can I best combine these two things.
+
+What I ended up doing is working in the gaming industry for 7 years, working on many aspects of game development (except making a game, but that's a talk for another day)
+
+But what I found interesting is to create tools that would play games for me.
+
+There are actually a lot of interesting technical considerations here so I hope you can get something out of this even if you don't play games.
+
+xx Explain Speedrunning
+
+xx Explain TAS speedrunning
+
+xx Show Bejeweled 3 tool I made (perhaps also the triangle game)
+
+xx Talk about the pros and cons of developing a tool like that
+
+xx Show a game that does this via slowdowns (perhaps Trackmania)
+
+xx Talk about the pros and cons on the slowdown version
+
+xx Show how Doom 1993 does this, Demo files, deterministic RNG
+
+xx Show it in code using the patricia doom repo, pros and cons, etc
+
+xx Show VVVVVV, how it works, etc.
+
+xx Show the game being played by the tool.
+
+xx Explain the tool, problems in making it, pros cons, etc
