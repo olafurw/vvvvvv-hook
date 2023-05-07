@@ -7,9 +7,6 @@
 
 CreateDevice_t D3DCreateDevice_orig;
 
-static constexpr size_t CREATEDEVICE_VTI{ 16 };
-static constexpr size_t ENDSCENE_VTI{ 42 };
-
 /**
  * This is a thread which indefinately resets the vtable pointers to our own functions
  * This is needed because the program might set these pointers back to
@@ -29,7 +26,14 @@ DWORD WINAPI VTablePatchThread(LPVOID threadParam) {
  * Direct3D's CreateDevice method. This allows us to then hook the IDirect3DDevice9
  * methods we need
  */
-HRESULT WINAPI D3DCreateDeviceHook(IDirect3D9 * Direct3D_Object, UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS * pPresentationParameters, IDirect3DDevice9 ** ppReturnedDeviceInterface) {
+HRESULT WINAPI D3DCreateDeviceHook(
+    IDirect3D9 * Direct3D_Object, 
+    UINT Adapter, 
+    D3DDEVTYPE DeviceType, 
+    HWND hFocusWindow, 
+    DWORD BehaviorFlags,
+    D3DPRESENT_PARAMETERS * pPresentationParameters, 
+    IDirect3DDevice9 ** ppReturnedDeviceInterface) {
   const HRESULT result{ D3DCreateDevice_orig(Direct3D_Object, Adapter, DeviceType, hFocusWindow, BehaviorFlags | D3DCREATE_MULTITHREADED, pPresentationParameters, ppReturnedDeviceInterface) };
   if (result != D3D_OK) {
     MessageBoxA(NULL, "Unable to create original device", "Unable to create original device", MB_ICONEXCLAMATION);

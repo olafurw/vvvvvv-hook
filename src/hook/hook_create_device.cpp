@@ -8,11 +8,6 @@
 #include "end_scene.h"
 #include "create_device.h"
 
-static constexpr size_t CREATEDEVICE_VTI{ 16 };
-static constexpr size_t ENDSCENE_VTI{ 42 };
-
-// Prototypes for d3d functions we want to hook
-
 HRESULT WINAPI HookCreateDevice() {
   IDirect3D9 * device{ Direct3DCreate9(D3D_SDK_VERSION) };
   if (!device) {

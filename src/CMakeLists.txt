@@ -1,6 +1,8 @@
 find_path(DETOURS_INCLUDE_DIRS "detours/detours.h")
 find_library(DETOURS_LIBRARY detours REQUIRED)
 
+find_package(imgui CONFIG REQUIRED)
+
 include(FindDirectX.cmake)
 
 # Loader
@@ -30,11 +32,17 @@ add_library(hook SHARED
     hook/virtual_table.cpp
     hook/virtual_protect.h
     hook/virtual_protect.cpp
+
+    hook/imgui_impl_dx9.h
+    hook/imgui_impl_dx9.cpp
+    hook/imgui_impl_win32.h
+    hook/imgui_impl_win32.cpp
 )
 target_include_directories(hook PRIVATE ${DETOURS_INCLUDE_DIRS})
 target_include_directories(hook PRIVATE ${DirectX_INCLUDE_DIRS})
 target_link_libraries(hook PRIVATE ${DETOURS_LIBRARY})
 target_link_libraries(hook PRIVATE ${DirectX_LIBRARIES})
+target_link_libraries(hook PRIVATE imgui::imgui)
 target_link_options(hook PRIVATE "/export:DetourFinishHelperProcess,@1,NONAME")
 
 set_target_properties(hook
