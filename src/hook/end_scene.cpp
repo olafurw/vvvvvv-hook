@@ -4,9 +4,13 @@
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx9.h"
 
+#include <chrono>
+
 EndScene_t D3DEndScene_orig;
 
 static unsigned int frameCounter{ 0 };
+static auto frame_time{ std::chrono::high_resolution_clock::now() };
+static std::chrono::milliseconds delta{ std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - frame_time) };
 
 bool imguiInit{ false };
 bool showMenu{ true };
@@ -53,11 +57,12 @@ HRESULT WINAPI D3DEndSceneHook(IDirect3DDevice9 * device) {
   ImGui::NewFrame();
 
   bool open{ true };
-  ImGui::SetNextWindowSize(ImVec2(100, 60));
+  ImGui::SetNextWindowSize(ImVec2(120, 70));
   ImGui::SetNextWindowPos(ImVec2(10, 10));
   ImGui::Begin("Debug", &open);
 
   ImGui::Text("frame: %d", frameCounter);
+  ImGui::Text("ms: %d", delta.count());
 
   ImGui::End();
   ImGui::EndFrame();
@@ -224,6 +229,10 @@ HRESULT WINAPI D3DEndSceneHook(IDirect3DDevice9 * device) {
     ip.ki.dwFlags = KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP;
     SendInput(1, &ip, sizeof(INPUT));
   }
+
+  const auto time_now{ std::chrono::high_resolution_clock::now() };
+  delta = std::chrono::duration_cast<std::chrono::milliseconds>(time_now - frame_time);
+  frame_time = time_now;
 
   return result;
 }

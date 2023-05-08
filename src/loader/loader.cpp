@@ -66,9 +66,12 @@ int main() {
   const auto settings{ "C:\\Users\\olafu\\Documents\\VVVVVV\\saves\\settings.vvv" };
   const auto unlockOrig{ "C:\\Users\\olafu\\Documents\\VVVVVV\\saves\\unlock.old" };
   const auto unlock{ "C:\\Users\\olafu\\Documents\\VVVVVV\\saves\\unlock.vvv" };
+  const auto tSaveOrig{ "C:\\Users\\olafu\\Documents\\VVVVVV\\saves\\tsave.old" };
+  const auto tSave{ "C:\\Users\\olafu\\Documents\\VVVVVV\\saves\\tsave.vvv" };
 
   CopyFile(settingsOrig, settings, FALSE);
   CopyFile(unlockOrig, unlock, FALSE);
+  CopyFile(tSaveOrig, tSave, FALSE);
 
   HookProcess hook(process, dll);
   if (!hook.init()) {
