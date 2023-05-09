@@ -44,11 +44,51 @@ But what I found interesting is to create tools that would play games for me.
 
 There are actually a lot of interesting technical considerations here so I hope you can get something out of this even if you don't play games.
 
+xx Game loop
+
 xx Explain Speedrunning
+
+Whenever there is a timer or a score, people will try to beat it. This is also true with video games.
+
+Early racing games were often the first games where people competed to beat them as fast as possible, but without the internet you would have to take a photo of your monitor and send it to a gaming magazine.
+
+This even became a regular section in Nintendo magazines.
+
+And then Doom arrived on the scene.
+
+Doom from 1993 was a first person shooter where you kill demons from hell. But here are the parts of the game that are important to us.
+
+Important fact 1. Doom is single threaded.
+
+Not very common to have multiple cores back in 1993, so many games from that time run the update loop I mentioned earlier in a very naive way. 1 read of the inputs, 1 update state, 1 draw.
+
+Important fact 2. Doom's random number generator is deterministic.
+
+Anytime anything in the game wants to receive a random number, they would ask the rng function, it would consult the rng table, and give you a number and then increment the index to the next entry in the table.
+
+Important fact 3. Doom allows you to record your gameplay.
+
+Doom can save your inputs into a file and then play them back, as if someone were pressing those inputs. This is only possible because of fact 1 and 2.
+
+Important fact 4. Doom shows you a timer at the end of the level.
+
+So Doom became one of the early speedrunning games, and because the internet was "super fast" back then, you could share the small file (called a demo) with your friends and they can see your skills at the game.
+
+There is a lot we could go into regarding the community but we are here to code, so lets talk tech.
 
 xx Explain TAS speedrunning
 
+Because these are files that only contain the inputs, you can write software that creates these files and try to exploit the game to the fullest.
+
+These kinds of speedruns are called TAS or Tool Assisted Speedruns.
+
+Tool Assisted Speedruns can be a very complicated affair or something very simple. They don't even need to be speedruns, you can use tools to assist you to play a game due to some sort of imparement or write some tools to play games just because its fun.
+
 xx Show Bejeweled 3 tool I made (perhaps also the triangle game)
+
+Here is an early attempt by me, this game is Bejeweled 3, a game where you have to match 3 gems or more of the same color. So what we can do is this. We can take a screenshot of the game board, use image detection software to figure out what color is where, reconstruct the board in memory and figure out the best move to take. Then we find where the mouse should click and move and perform that action.
+
+You'd think that all of these actions are slow, but it is so fast that it can perform match movements in mid air, while the gems are falling.
 
 xx Talk about the pros and cons of developing a tool like that
 
