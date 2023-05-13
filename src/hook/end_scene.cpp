@@ -8,8 +8,11 @@
 #include <cmath>
 #include <vector>
 #include <format>
+#include <fstream>
 
-std::vector<std::string> lagFrames;
+std::vector<std::string> input;
+std::string lastInput;
+uint32_t delay{ 0 };
 
 void PressButton(WORD button) {
   INPUT ip;
@@ -34,8 +37,6 @@ EndScene_t D3DEndScene_orig;
 static unsigned int frameCounter{ 0 };
 static auto frame_time{ std::chrono::high_resolution_clock::now() };
 static std::chrono::microseconds delta{ std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - frame_time) };
-static constexpr long long frame_ms{ 33333 };
-static long long frame_lag{ 0 };
 
 bool imguiInit{ false };
 bool showMenu{ true };
@@ -58,10 +59,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 }
 
 HRESULT WINAPI D3DEndSceneHook(IDirect3DDevice9 * device) {
-  // if (!logFile.is_open()) {
-  //   logFile.open("log.txt", std::ios::out | std::ios::app);
-  // }
-
   if (!imguiInit) {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -77,6 +74,13 @@ HRESULT WINAPI D3DEndSceneHook(IDirect3DDevice9 * device) {
       ImGui::GetIO().ImeWindowHandle = Process.TargetHwnd;
       imguiInit = true;
     }
+
+    std::ifstream inputFile("lr.txt");
+
+    std::string line;
+    while (std::getline(inputFile, line)) {
+      input.push_back(line);
+    }
   }
 
   frameCounter++;
@@ -86,25 +90,39 @@ HRESULT WINAPI D3DEndSceneHook(IDirect3DDevice9 * device) {
   ImGui::NewFrame();
 
   bool open{ true };
-  ImGui::SetNextWindowSize(ImVec2(120, 200));
-  ImGui::SetNextWindowPos(ImVec2(10, 10));
-  ImGui::Begin("Debug", &open);
+  ImGui::SetNextWindowSize(ImVec2(110, 80));
+  ImGui::SetNextWindowPos(ImVec2(0, 0));
+  ImGui::Begin("Debug", &open, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar);
+  ImGui::SetScrollY(0);
+  ImGui::SetScrollX(0);
 
-  ImGui::Text("frame: %d", frameCounter);
+  ImGui::Text("f: %d", frameCounter);
+  ImGui::Text("i: %s", lastInput.c_str());
 
   const double d{ delta.count() / 1000.0f };
-  ImGui::Text("ms: %.3f", d);
+  ImGui::Text("ms: %.2f", d);
 
-  const double fl{ frame_lag / 1000.0f };
-  ImGui::Text("drift: %.3f", fl);
-
-  std::vector<const char *> lagFramesC;
-  for (const auto & s : lagFrames) {
-    lagFramesC.push_back(s.c_str());
+  if (ImGui::Button("||")) {
+    delay = 3000;
   }
-  int currentLagFrame = 0;
 
-  ImGui::ListBox("lag frames", &currentLagFrame, lagFramesC.data(), lagFramesC.size());
+  ImGui::SameLine();
+
+  if (ImGui::Button(">")) {
+    delay = 1000;
+  }
+
+  ImGui::SameLine();
+
+  if (ImGui::Button(">>")) {
+    delay = 100;
+  }
+
+  ImGui::SameLine();
+
+  if (ImGui::Button("n")) {
+    delay = 0;
+  }
 
   ImGui::End();
   ImGui::EndFrame();
@@ -113,59 +131,32 @@ HRESULT WINAPI D3DEndSceneHook(IDirect3DDevice9 * device) {
 
   const HRESULT result{ D3DEndScene_orig(device) };
 
-  if (frameCounter == 1) {
-    PressButton(btn_space);
-  } else if (frameCounter == 2) {
-    ReleaseButton(btn_space);
-  } else if (frameCounter == 3) {
-    PressButton(btn_space);
-  } else if (frameCounter == 4) {
-    ReleaseButton(btn_space);
-  } else if (frameCounter == 5) {
-    PressButton(btn_space);
-  } else if (frameCounter == 6) {
-    ReleaseButton(btn_space);
-  } else if (frameCounter > 50 && frameCounter < 58) {
-    PressButton(btn_right);
-  } else if (frameCounter == 58) {
-    ReleaseButton(btn_right);
-  } else if (frameCounter > 70 && frameCounter < 87) {
-    PressButton(btn_left);
-  } else if (frameCounter == 87) {
-    ReleaseButton(btn_left);
-  } else if (frameCounter > 100 && frameCounter < 118) {
-    PressButton(btn_right);
-  } else if (frameCounter == 118) {
-    ReleaseButton(btn_right);
-  } else if (frameCounter > 130 && frameCounter < 147) {
-    PressButton(btn_left);
-  } else if (frameCounter == 147) {
-    ReleaseButton(btn_left);
-  } else if (frameCounter > 160 && frameCounter < 178) {
-    PressButton(btn_right);
-  } else if (frameCounter == 178) {
-    ReleaseButton(btn_right);
-  } else if (frameCounter > 190 && frameCounter < 207) {
-    PressButton(btn_left);
-  } else if (frameCounter == 207) {
-    ReleaseButton(btn_left);
-  } else if (frameCounter > 220 && frameCounter < 238) {
-    PressButton(btn_right);
-  } else if (frameCounter == 238) {
-    ReleaseButton(btn_right);
-  } else if (frameCounter > 250 && frameCounter < 267) {
-    PressButton(btn_left);
-  } else if (frameCounter == 267) {
-    ReleaseButton(btn_left);
+  if (frameCounter < input.size()) {
+    lastInput = input[frameCounter];
+    if (!lastInput.empty() && lastInput[0] != '-') {
+      for (const char c : lastInput) {
+        if (c == 'S') {
+          PressButton(btn_space);
+        } else if (c == 's') {
+          ReleaseButton(btn_space);
+        } else if (c == 'L') {
+          PressButton(btn_left);
+        } else if (c == 'l') {
+          ReleaseButton(btn_left);
+        } else if (c == 'R') {
+          PressButton(btn_right);
+        } else if (c == 'r') {
+          ReleaseButton(btn_right);
+        }
+      }
+    }
   }
 
   const auto time_now{ std::chrono::high_resolution_clock::now() };
   delta = std::chrono::duration_cast<std::chrono::microseconds>(time_now - frame_time);
-  frame_lag = delta.count() - frame_ms;
-  if (frame_lag > 3000) {
-    lagFrames.push_back(std::to_string(frame_lag));
-  }
   frame_time = time_now;
+
+  Sleep(delay);
 
   return result;
 }
