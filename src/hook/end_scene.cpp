@@ -14,11 +14,15 @@ std::vector<std::string> input;
 std::string lastInput;
 uint32_t delay{ 0 };
 
+bool guiSpace { false };
+bool guiLeft{ false };
+bool guiRight{ false };
+
 void PressButton(WORD button) {
   INPUT ip;
   ip.type = INPUT_KEYBOARD;
   ip.ki.time = 0;
-  ip.ki.wScan = button; // space
+  ip.ki.wScan = button;
   ip.ki.dwFlags = KEYEVENTF_SCANCODE;
   SendInput(1, &ip, sizeof(INPUT));
 }
@@ -85,12 +89,17 @@ HRESULT WINAPI D3DEndSceneHook(IDirect3DDevice9 * device) {
 
   frameCounter++;
 
+  if (guiSpace) {
+    ReleaseButton(btn_space);
+    guiSpace = false;
+  }
+
   ImGui_ImplDX9_NewFrame();
   ImGui_ImplWin32_NewFrame();
   ImGui::NewFrame();
 
   bool open{ true };
-  ImGui::SetNextWindowSize(ImVec2(110, 80));
+  ImGui::SetNextWindowSize(ImVec2(110, 120));
   ImGui::SetNextWindowPos(ImVec2(0, 0));
   ImGui::Begin("Debug", &open, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar);
   ImGui::SetScrollY(0);
@@ -124,6 +133,37 @@ HRESULT WINAPI D3DEndSceneHook(IDirect3DDevice9 * device) {
     delay = 0;
   }
 
+  if (ImGui::Button("l")) {
+    if (!guiLeft) {
+      PressButton(btn_left);
+      guiLeft = true;
+    } else {
+      ReleaseButton(btn_left);
+      guiLeft = false;
+    }
+  }
+
+  ImGui::SameLine();
+
+  if (ImGui::Button(" ")) {
+    PressButton(btn_space);
+    guiSpace = true;
+  }
+
+  ImGui::SameLine();
+
+  if (ImGui::Button("r")) {
+    if (!guiRight) {
+      PressButton(btn_right);
+      guiRight = true;
+    } else {
+      ReleaseButton(btn_right);
+      guiRight = false;
+    }
+  }
+
+  ImGui::Text("f: %d", guiRight);
+
   ImGui::End();
   ImGui::EndFrame();
   ImGui::Render();
@@ -136,17 +176,17 @@ HRESULT WINAPI D3DEndSceneHook(IDirect3DDevice9 * device) {
     if (!lastInput.empty() && lastInput[0] != '-') {
       for (const char c : lastInput) {
         if (c == 'S') {
-          PressButton(btn_space);
+          //PressButton(btn_space);
         } else if (c == 's') {
-          ReleaseButton(btn_space);
+          //ReleaseButton(btn_space);
         } else if (c == 'L') {
-          PressButton(btn_left);
+         // PressButton(btn_left);
         } else if (c == 'l') {
-          ReleaseButton(btn_left);
+          //ReleaseButton(btn_left);
         } else if (c == 'R') {
-          PressButton(btn_right);
+          //PressButton(btn_right);
         } else if (c == 'r') {
-          ReleaseButton(btn_right);
+          //ReleaseButton(btn_right);
         }
       }
     }
