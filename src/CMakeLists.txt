@@ -30,6 +30,12 @@ add_library(hook SHARED
     hook/create_device.cpp
     hook/end_scene.h
     hook/end_scene.cpp
+    hook/end_scene_imgui.h
+    hook/end_scene_imgui.cpp
+    hook/end_scene_override.h
+    hook/end_scene_override.cpp
+    hook/keyboard_helpers.h
+    hook/keyboard_helpers.cpp
     hook/virtual_table.h
     hook/virtual_table.cpp
     hook/virtual_protect.h
