@@ -52,7 +52,7 @@ void HookProcess::start() {
     ResumeThread(pi.hThread);
     WaitForSingleObject(pi.hProcess, INFINITE);
 
-    DWORD dwResult = 0;
+    DWORD dwResult{ 0 };
     if (!GetExitCodeProcess(pi.hProcess, &dwResult)) {
         printf("withdll.exe: GetExitCodeProcess failed: %ld\n", GetLastError());
         return;

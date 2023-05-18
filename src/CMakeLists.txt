@@ -10,6 +10,8 @@ add_executable(loader
     loader/loader.cpp
     loader/validate_dll.h
     loader/validate_dll.cpp
+    loader/get_library.h
+    loader/get_library.cpp
 )
 target_include_directories(loader PRIVATE ${DETOURS_INCLUDE_DIRS})
 target_link_libraries(loader PRIVATE ${DETOURS_LIBRARY})

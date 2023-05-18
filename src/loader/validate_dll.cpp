@@ -3,6 +3,8 @@
 #include <windows.h>
 #include "detours/detours.h"
 
+#include "get_library.h"
+
 static BOOL CALLBACK ExportCallback(_In_opt_ PVOID pContext,
                                     _In_ ULONG nOrdinal,
                                     _In_opt_ LPCSTR pszSymbol,
@@ -24,28 +26,19 @@ static BOOL CALLBACK ExportCallback(_In_opt_ PVOID pContext,
 }
 
 std::optional<std::string> isDllValid(const std::string & path) {
-    constexpr uint32_t bufferSize{ 4096 };
-    char dllPath[bufferSize]{};
-    TCHAR ** lppPart{ nullptr };
-
-    if (!GetFullPathNameA(path.c_str(), bufferSize, dllPath, lppPart)) {
-        return {};
-    }
-
-    HMODULE hDll{ LoadLibraryExA(dllPath, NULL, DONT_RESOLVE_DLL_REFERENCES) };
-    if (hDll == nullptr) {
+    GetLibrary getLib(path);
+    if (!getLib.loaded) {
         return {};
     }
 
     ExportContext ec{};
     ec.fHasOrdinal1 = FALSE;
     ec.nExports = 0;
-    DetourEnumerateExports(hDll, &ec, ExportCallback);
-    FreeLibrary(hDll);
+    DetourEnumerateExports(getLib.dll, &ec, ExportCallback);
 
     if (!ec.fHasOrdinal1) {
         return {};
     }
 
-    return dllPath;
+    return getLib.dllPath;
 }
