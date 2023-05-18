@@ -8,6 +8,9 @@ BreakBeforeBraces: Custom
 BreakConstructorInitializers: BeforeColon
 BreakInheritanceList: BeforeColon
 ColumnLimit: 0
+IndentWidth: 4
+TabWidth: 4
+SortIncludes: false
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
 PenaltyReturnTypeOnItsOwnLine: 10000
 PointerAlignment: Middle
