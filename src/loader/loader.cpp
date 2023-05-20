@@ -68,6 +68,7 @@ int main(int argc, char ** argv) {
     const auto dll{ "hook.dll" };
     const auto process{ std::format("{}{}", binFolder, "VVVVVV\\VVVVVV.exe") };
     const auto tasDataDestination{ std::format("{}{}", binFolder, "tas_data.txt") };
+    DeleteFile(tasDataDestination.c_str());
 
     if (argc > 1) {
         const std::string arg{ argv[1] };
