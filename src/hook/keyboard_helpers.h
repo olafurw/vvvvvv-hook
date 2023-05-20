@@ -13,3 +13,6 @@ void ReleaseLeft();
 
 void PressRight();
 void ReleaseRight();
+
+void PressDown();
+void ReleaseDown();

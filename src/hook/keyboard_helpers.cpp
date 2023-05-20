@@ -5,6 +5,7 @@
 static constexpr uint16_t btn_right{ 0x20 };
 static constexpr uint16_t btn_left{ 0x1e };
 static constexpr uint16_t btn_space{ 0x39 };
+static constexpr uint16_t btn_down{ 0x1f };
 
 void PressButton(WORD button) {
     INPUT ip;
@@ -46,4 +47,12 @@ void PressRight() {
 
 void ReleaseRight() {
     ReleaseButton(btn_right);
+}
+
+void PressDown() {
+    PressButton(btn_down);
+}
+
+void ReleaseDown() {
+    ReleaseButton(btn_down);
 }

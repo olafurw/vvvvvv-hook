@@ -43,6 +43,10 @@ void EndSceneOverride(IDirect3DDevice9 * device, const uint32_t frame, const std
                     PressRight();
                 } else if (c == 'r') {
                     ReleaseRight();
+                } else if (c == 'D') {
+                    PressDown();
+                } else if (c == 'd') {
+                    ReleaseDown();
                 }
             }
         }
