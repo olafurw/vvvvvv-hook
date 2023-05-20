@@ -121,8 +121,6 @@ void EndSceneImgui(IDirect3DDevice9 * device, const uint32_t frame, const std::c
         }
     }
 
-    ImGui::Text("f: %d", guiRight);
-
     ImGui::End();
     ImGui::EndFrame();
     ImGui::Render();

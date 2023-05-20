@@ -2,6 +2,7 @@
 #include <optional>
 #include <stdio.h>
 #include <string>
+#include <format>
 #include <windows.h>
 
 #include "detours/detours.h"
@@ -15,13 +16,13 @@ struct HookProcess {
     std::string process;
     std::string dll;
 
-    HookProcess(const char * process, const char * dll);
+    HookProcess(const std::string & process, const char * dll);
 
     bool init();
     void start();
 };
 
-HookProcess::HookProcess(const char * process, const char * dll)
+HookProcess::HookProcess(const std::string & process, const char * dll)
   : process{ process },
     dll{ dll } {
     ZeroMemory(&si, sizeof(si));
@@ -59,22 +60,37 @@ void HookProcess::start() {
     }
 }
 
-int main() {
+int main(int argc, char ** argv) {
+    const auto projectFolder{ "C:\\Users\\olafu\\source\\repos\\vvvvvv-hook\\" };
+    const auto binFolder{ "C:\\Users\\olafu\\source\\repos\\vvvvvv-hook\\build\\x86-windows\\bin\\Debug\\" };
+    const auto saveFolder{ "C:\\Users\\olafu\\Documents\\VVVVVV\\saves\\" };
+
     const auto dll{ "hook.dll" };
-    const auto process{ "C:\\Users\\olafu\\source\\repos\\vvvvvv-hook\\build\\x86-windows\\bin\\Debug\\VVVVVV\\VVVVVV.exe" };
+    const auto process{ std::format("{}{}", binFolder, "VVVVVV\\VVVVVV.exe") };
+    const auto tasDataDestination{ std::format("{}{}", binFolder, "tas_data.txt") };
 
-    const auto settingsOrig{ "C:\\Users\\olafu\\Documents\\VVVVVV\\saves\\settings.old" };
-    const auto settings{ "C:\\Users\\olafu\\Documents\\VVVVVV\\saves\\settings.vvv" };
-    const auto unlockOrig{ "C:\\Users\\olafu\\Documents\\VVVVVV\\saves\\unlock.old" };
-    const auto unlock{ "C:\\Users\\olafu\\Documents\\VVVVVV\\saves\\unlock.vvv" };
-    const auto tSaveOrig{ "C:\\Users\\olafu\\Documents\\VVVVVV\\saves\\tsave.old" };
-    const auto tSave{ "C:\\Users\\olafu\\Documents\\VVVVVV\\saves\\tsave.vvv" };
+    if (argc > 1) {
+        const std::string arg{ argv[1] };
+        if (arg == "simple") {
+            const auto settingsOrig{ std::format("{}{}", saveFolder, "settings_simple.vvv") };
+            const auto settings{ std::format("{}{}", saveFolder, "settings.vvv") };
+            const auto unlockOrig{ std::format("{}{}", saveFolder, "unlock_simple.vvv") };
+            const auto unlock{ std::format("{}{}", saveFolder, "unlock.vvv") };
+            const auto tSaveOrig{ std::format("{}{}", saveFolder, "tsave_simple.vvv") };
+            const auto tSave{ std::format("{}{}", saveFolder, "tsave.vvv") };
+            const auto quickSave{ std::format("{}{}", saveFolder, "qsave.vvv") };
 
-    CopyFile(settingsOrig, settings, FALSE);
-    CopyFile(unlockOrig, unlock, FALSE);
-    CopyFile(tSaveOrig, tSave, FALSE);
+            CopyFile(settingsOrig.c_str(), settings.c_str(), FALSE);
+            CopyFile(unlockOrig.c_str(), unlock.c_str(), FALSE);
+            CopyFile(tSaveOrig.c_str(), tSave.c_str(), FALSE);
+            DeleteFile(quickSave.c_str());
 
-    HookProcess hook(process, dll);
+            const auto tasData{ std::format("{}{}", projectFolder, "simple.txt") };
+            CopyFile(tasData.c_str(), tasDataDestination.c_str(), FALSE);
+        }
+    }
+
+    HookProcess hook(process.c_str(), dll);
     if (!hook.init()) {
         return 1;
     }

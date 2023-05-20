@@ -18,8 +18,8 @@ void EndSceneOverride(IDirect3DDevice9 * device, const uint32_t frame, const std
     EndSceneImgui(device, frame, delta, delay);
 
     if (!overrideInit) {
-        std::ifstream inputFile("lr.txt");
-        std::ofstream outputFile("output.txt", std::ios::out);
+        overrideInit = true;
+        std::ifstream inputFile("tas_data.txt");
 
         std::string line;
         while (std::getline(inputFile, line)) {
