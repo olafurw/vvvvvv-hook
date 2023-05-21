@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Save>
+    <!-- Save file -->
+    <Data>
+        <unlock>1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,</unlock>
+        <unlocknotify>0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,</unlocknotify>
+        <besttimes>-1,-1,-1,-1,-1,-1,</besttimes>
+        <bestframes>-1,-1,-1,-1,-1,-1,</bestframes>
+        <besttrinkets>-1,-1,-1,-1,-1,-1,</besttrinkets>
+        <bestlives>-1,-1,-1,-1,-1,-1,</bestlives>
+        <bestrank>-1,-1,-1,-1,-1,-1,</bestrank>
+        <bestgamedeaths>-1</bestgamedeaths>
+        <stat_trinkets>3</stat_trinkets>
+        <swnbestrank>0</swnbestrank>
+        <swnrecord>0</swnrecord>
+        <fullscreen>0</fullscreen>
+        <stretch>1</stretch>
+        <useLinearFilter>0</useLinearFilter>
+        <window_width>1495</window_width>
+        <window_height>970</window_height>
+        <noflashingmode>0</noflashingmode>
+        <colourblindmode>0</colourblindmode>
+        <setflipmode>0</setflipmode>
+        <invincibility>0</invincibility>
+        <slowdown>30</slowdown>
+        <advanced_smoothing>0</advanced_smoothing>
+        <usingmmmmmm>0</usingmmmmmm>
+        <ghostsenabled>0</ghostsenabled>
+        <skipfakeload>1</skipfakeload>
+        <disablepause>1</disablepause>
+        <disableaudiopause>0</disableaudiopause>
+        <notextoutline>0</notextoutline>
+        <translucentroomname>0</translucentroomname>
+        <over30mode>0</over30mode>
+        <inputdelay>1</inputdelay>
+        <glitchrunnermode>2.0</glitchrunnermode>
+        <showingametimer>1</showingametimer>
+        <vsync>1</vsync>
+        <musicvolume>32</musicvolume>
+        <soundvolume>32</soundvolume>
+        <separate_interact>0</separate_interact>
+        <controllerSensitivity>2</controllerSensitivity>
+        <flipButton>0</flipButton>
+        <enterButton>3</enterButton>
+        <escButton>1</escButton>
+        <restartButton>10</restartButton>
+        <interactButton>2</interactButton>
+    </Data>
+</Save>

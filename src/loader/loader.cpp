@@ -65,6 +65,11 @@ int main(int argc, char ** argv) {
     const auto binFolder{ "C:\\Users\\olafu\\source\\repos\\vvvvvv-hook\\build\\x86-windows\\bin\\Debug\\" };
     const auto saveFolder{ "C:\\Users\\olafu\\Documents\\VVVVVV\\saves\\" };
 
+    const auto tSave{ std::format("{}{}", saveFolder, "tsave.vvv") };
+    const auto unlock{ std::format("{}{}", saveFolder, "unlock.vvv") };
+    const auto settings{ std::format("{}{}", saveFolder, "settings.vvv") };
+    const auto quickSave{ std::format("{}{}", saveFolder, "qsave.vvv") };
+
     const auto dll{ "hook.dll" };
     const auto process{ std::format("{}{}", binFolder, "VVVVVV\\VVVVVV.exe") };
     const auto tasDataDestination{ std::format("{}{}", binFolder, "tas_data.txt") };
@@ -74,12 +79,8 @@ int main(int argc, char ** argv) {
         const std::string arg{ argv[1] };
         if (arg == "simple") {
             const auto settingsOrig{ std::format("{}{}", saveFolder, "settings_simple.vvv") };
-            const auto settings{ std::format("{}{}", saveFolder, "settings.vvv") };
             const auto unlockOrig{ std::format("{}{}", saveFolder, "unlock_simple.vvv") };
-            const auto unlock{ std::format("{}{}", saveFolder, "unlock.vvv") };
             const auto tSaveOrig{ std::format("{}{}", saveFolder, "tsave_simple.vvv") };
-            const auto tSave{ std::format("{}{}", saveFolder, "tsave.vvv") };
-            const auto quickSave{ std::format("{}{}", saveFolder, "qsave.vvv") };
 
             CopyFile(settingsOrig.c_str(), settings.c_str(), FALSE);
             CopyFile(unlockOrig.c_str(), unlock.c_str(), FALSE);
@@ -90,12 +91,8 @@ int main(int argc, char ** argv) {
             CopyFile(tasData.c_str(), tasDataDestination.c_str(), FALSE);
         } else if (arg == "trinket") {
             const auto settingsOrig{ std::format("{}{}", saveFolder, "settings_simple.vvv") };
-            const auto settings{ std::format("{}{}", saveFolder, "settings.vvv") };
             const auto unlockOrig{ std::format("{}{}", saveFolder, "unlock_simple.vvv") };
-            const auto unlock{ std::format("{}{}", saveFolder, "unlock.vvv") };
             const auto tSaveOrig{ std::format("{}{}", saveFolder, "tsave_simple.vvv") };
-            const auto tSave{ std::format("{}{}", saveFolder, "tsave.vvv") };
-            const auto quickSave{ std::format("{}{}", saveFolder, "qsave.vvv") };
             const auto quickSaveOrig{ std::format("{}{}", saveFolder, "qsave_trinket.vvv") };
 
             CopyFile(settingsOrig.c_str(), settings.c_str(), FALSE);
@@ -104,6 +101,19 @@ int main(int argc, char ** argv) {
             CopyFile(quickSaveOrig.c_str(), quickSave.c_str(), FALSE);
 
             const auto tasData{ std::format("{}{}", projectFolder, "trinket.txt") };
+            CopyFile(tasData.c_str(), tasDataDestination.c_str(), FALSE);
+        } else if (arg == "vvv") {
+            const auto settingsOrig{ std::format("{}{}", saveFolder, "settings_vvv.vvv") };
+            const auto unlockOrig{ std::format("{}{}", saveFolder, "unlock_vvv.vvv") };
+            const auto tSaveOrig{ std::format("{}{}", saveFolder, "tsave_vvv.vvv") };
+            const auto quickSaveOrig{ std::format("{}{}", saveFolder, "qsave_vvv.vvv") };
+
+            CopyFile(settingsOrig.c_str(), settings.c_str(), FALSE);
+            CopyFile(unlockOrig.c_str(), unlock.c_str(), FALSE);
+            CopyFile(tSaveOrig.c_str(), tSave.c_str(), FALSE);
+            CopyFile(quickSaveOrig.c_str(), quickSave.c_str(), FALSE);
+
+            const auto tasData{ std::format("{}{}", projectFolder, "vvv.txt") };
             CopyFile(tasData.c_str(), tasDataDestination.c_str(), FALSE);
         }
     }
