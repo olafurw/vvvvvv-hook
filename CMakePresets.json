@@ -18,110 +18,24 @@
                 "VCPKG_FEATURE_FLAGS": "manifests,versions,binarycaching,registries"
             }
         },
-        {
-            "name": "x64-windows",
-            "description": "Sets x64 arch, compilers, build type",
-            "generator": "Visual Studio 17 2022",
-            "inherits": "base",
-            "architecture": {
-                "value": "x64",
-                "strategy": "external"
-            },
-            "toolset": {
-                "value": "host=x64",
-                "strategy": "external"
-            },
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug",
-                "CMAKE_CXX_COMPILER": "cl"
-            },
-            "vendor": {
-                "microsoft.com/VisualStudioSettings/CMake/1.0": {
-                    "hostOS": [
-                        "Windows"
-                    ]
-                }
-            }
+      {
+        "name": "x86-windows",
+        "description": "Sets x86 arch, compilers, build type",
+        "generator": "Visual Studio 17 2022",
+        "inherits": "base",
+        "architecture": "Win32",
+        "cacheVariables": {
+          "CMAKE_BUILD_TYPE": "Debug",
+          "CMAKE_CXX_COMPILER": "cl"
         },
-        {
-            "name": "x86-windows",
-            "description": "Sets x86 arch, compilers, build type",
-            "generator": "Visual Studio 17 2022",
-            "inherits": "base",
-            "architecture": {
-                "value": "x86",
-                "strategy": "external"
-            },
-            "toolset": {
-                "value": "host=x86",
-                "strategy": "external"
-            },
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug",
-                "CMAKE_CXX_COMPILER": "cl"
-            },
-            "vendor": {
-                "microsoft.com/VisualStudioSettings/CMake/1.0": {
-                    "hostOS": [
-                        "Windows"
-                    ]
-                }
-            }
-        },
-        {
-            "name": "linux-gcc",
-            "description": "Compile On Linux (GCC)",
-            "inherits": "base",
-            "generator": "Ninja",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug",
-                "CMAKE_CXX_COMPILER": "g++",
-                "CMAKE_CXX_FLAGS_DEBUG": "-g3"
-            },
-            "vendor": {
-                "microsoft.com/VisualStudioSettings/CMake/1.0": {
-                    "hostOS": [
-                        "Linux"
-                    ]
-                }
-            }
-        },
-        {
-            "name": "linux-clang",
-            "description": "Compile On Linux (Clang)",
-            "inherits": "base",
-            "generator": "Ninja",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug",
-                "CMAKE_CXX_COMPILER": "clang++",
-                "CMAKE_CXX_FLAGS_DEBUG": "-g3"
-            },
-            "vendor": {
-                "microsoft.com/VisualStudioSettings/CMake/1.0": {
-                    "hostOS": [
-                        "Linux"
-                    ]
-                }
-            }
-        },
-        {
-            "name": "macos",
-            "generator": "Ninja",
-            "description": "Compile on macOS",
-            "inherits": "base",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug",
-                "CMAKE_CXX_COMPILER": "clang++",
-                "CMAKE_CXX_FLAGS_DEBUG": "-g3"
-            },
-            "vendor": {
-                "microsoft.com/VisualStudioSettings/CMake/1.0": {
-                    "hostOS": [
-                        "macOS"
-                    ]
-                }
-            }
+        "vendor": {
+          "microsoft.com/VisualStudioSettings/CMake/1.0": {
+            "hostOS": [
+              "Windows"
+            ]
+          }
         }
+      }
     ],
     "buildPresets": [
         {
@@ -132,30 +46,9 @@
             "inheritConfigureEnvironment": true
         },
         {
-            "name": "x64-windows-build",
-            "description": "Clean before build (--clean-first)",
-            "configurePreset": "x64-windows",
-            "inherits": "core-build"
-        },
-        {
             "name": "x86-windows-build",
             "description": "Clean before build (--clean-first)",
             "configurePreset": "x86-windows",
-            "inherits": "core-build"
-        },
-        {
-            "name": "linux-gcc-build",
-            "configurePreset": "linux-gcc",
-            "inherits": "core-build"
-        },
-        {
-            "name": "linux-clang-build",
-            "configurePreset": "linux-clang",
-            "inherits": "core-build"
-        },
-        {
-            "name": "macos-build",
-            "configurePreset": "macos",
             "inherits": "core-build"
         }
     ],
@@ -170,43 +63,9 @@
             }
         },
         {
-            "name": "x64-windows-test",
-            "description": "Run tests on Windows",
-            "configurePreset": "x64-windows",
-            "inherits": [
-                "core-tests"
-            ]
-        },
-        {
             "name": "x86-windows-test",
             "description": "Run tests on Windows",
             "configurePreset": "x86-windows",
-            "inherits": [
-                "core-tests"
-            ]
-        },
-        {
-            "name": "linux-gcc-test",
-            "description": "Run tests on Linux (GCC)",
-            "configurePreset": "linux-gcc",
-            "displayName": "linux-test",
-            "inherits": [
-                "core-tests"
-            ]
-        },
-        {
-            "name": "linux-clang-test",
-            "description": "Run tests on Linux (Clang)",
-            "configurePreset": "linux-clang",
-            "displayName": "linux-test",
-            "inherits": [
-                "core-tests"
-            ]
-        },
-        {
-            "name": "macos-test",
-            "description": "Run tests on macOS",
-            "configurePreset": "macos",
             "inherits": [
                 "core-tests"
             ]
